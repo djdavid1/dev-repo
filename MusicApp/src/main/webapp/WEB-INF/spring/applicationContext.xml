@@ -31,5 +31,31 @@
 		scope="singleton" />
 		
 	<bean id="serverCleanup" class="de.aoe.musicworld.utils.ServerCleanup" />
+	
+	
+	
+	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPath" value="de.aoe.musicworld.pojo" />
+		<property name="marshallerProperties">
+			<map>
+				<entry key="jaxb.encoding" value="UTF-8" />
+				<entry key="jaxb.formatted.output">
+					<value type="boolean">false</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPath" value="de.aoe.musicworld.pojo" />
+		<property name="marshallerProperties">
+			<map>
+				<entry key="jaxb.encoding" value="UTF-8" />
+				<entry key="jaxb.formatted.output">
+					<value type="boolean">false</value>
+				</entry>
+			</map>
+		</property>
+	</bean>	
 
 </beans>
