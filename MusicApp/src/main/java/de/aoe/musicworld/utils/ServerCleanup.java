@@ -1,18 +1,17 @@
 package de.aoe.musicworld.utils;
 
 import static de.aoe.musicworld.utils.BaseConstants.INCOMING_WORK_DIR;
+
+
 import static de.aoe.musicworld.utils.BaseConstants.INCOMING_FILE_FILTER;
 import static de.aoe.musicworld.utils.BaseConstants.OUTGOING_WORK_DIR;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import de.aoe.musicworld.base.services.FilePollerService;
 
 /**
  * Provides some utilities for clean up of the server
@@ -41,34 +40,20 @@ public class ServerCleanup {
 		LOG.debug("INCOMING_FILE_FILTER=" + incomingFileNameFilter);
 		LOG.debug("OUTGOING_WORK_DIR=" + outgoingWorkDir);
 		
-		String[] fileExtensions = incomingFileNameFilter.split(";");
-		List<String> listFilenames = new ArrayList<>();
-		// read the fileNames in the inputfile directory, which were not processed
-		try {
-			listFilenames = readInputFiles(incomingWorkDir, fileExtensions);
-		} catch (IOException e) {
-			LOG.error(e);
-		}
-		for (String fileName : listFilenames) {
-			LOG.debug("Found file: " + fileName);
-			
-		}
-
+		ThreadPoolTaskExecutor baseExecutor = (ThreadPoolTaskExecutor) ApplicationContextProvider.getApplicationContext()
+				.getBean("baseExecutor");		
+		
+		FilePollerService recordsPollerService = new FilePollerService(incomingWorkDir, incomingFileNameFilter);
+		recordsPollerService.setTaskName("recordsToReleasesTask");
+		
+		// TODO Adapter() -> FileAdapter(outgoingWorkDir)
+		//                   RestSaturn()
+//		recordsPollerService.setOutgoingAdapter("outgoingAdapter");
+		
+		baseExecutor.execute(recordsPollerService);
+		
 	}
 	
-	private List<String> readInputFiles(String incomingWorkDir, String[] fileExtensions) throws IOException{
-		File fileDir = new File(incomingWorkDir);
-		List<File> files = (List<File>) FileUtils.listFiles(fileDir, fileExtensions, true);
-		List<String> listFilenames = new ArrayList<>();
-		for (File file : files) {
-			listFilenames.add(file.getCanonicalPath());
-			LOG.debug("Found file: " + file.getCanonicalPath());
-			
-		}
-		return listFilenames;
-	}
-		
-
 }
 
 

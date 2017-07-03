@@ -5,11 +5,12 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import de.aoe.musicworld.base.services.FilePollerService;
+import de.aoe.musicworld.base.services.TaskMonitorService;
 import de.aoe.musicworld.utils.ApplicationContextProvider;
 import de.aoe.musicworld.utils.ServerCleanup;
-
-
 
 /**
  * This class is used to register/initialize some important services during
@@ -25,18 +26,31 @@ public class BaseWebAppListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent event) {
 		LOG.debug("##### START MUSIC APP !!!!!");
 		
+		ThreadPoolTaskExecutor baseExecutor = (ThreadPoolTaskExecutor) ApplicationContextProvider.getApplicationContext()
+				.getBean("baseExecutor");
+		
+		baseExecutor.execute(new TaskMonitorService());
+		
 		// initialize
 		cleanupServer();
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {
-		// destroy
+		ThreadPoolTaskExecutor baseExecutor = (ThreadPoolTaskExecutor) ApplicationContextProvider.getApplicationContext()
+				.getBean("baseExecutor");	
+		baseExecutor.shutdown(); // waitForTasksToCompleteOnShutdown = false
 
 		/**
-		 * Here we take care the WorkerPool bean is stopped when the web
-		 * application gets stopped.
+		 * Here we take care the ThreadPool bean is stopped when the web
+		 * application gets stopped. We wait till the Tasks are done.
 		 */
-		// TODO Pool
+		ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) ApplicationContextProvider.getApplicationContext()
+					.getBean("taskExecutor");	
+
+		int totalTasks = taskExecutor.getActiveCount();
+		LOG.debug("Active Tasks : " + totalTasks);
+		taskExecutor.shutdown(); // waitForTasksToCompleteOnShutdown = true
+		
 		LOG.debug("##### END MUSIC APP !!!!!");
 	}
 

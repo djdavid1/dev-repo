@@ -32,7 +32,7 @@
 		
 	<bean id="serverCleanup" class="de.aoe.musicworld.utils.ServerCleanup" />
 	
-	
+	<bean id="recordsToReleasesTask" class="de.aoe.musicworld.transforms.tasks.RecordsToReleasesTask" scope="prototype"/>
 	
 	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
 		<property name="contextPath" value="de.aoe.musicworld.pojo" />
@@ -57,5 +57,21 @@
 			</map>
 		</property>
 	</bean>	
+	
+	<bean id="baseExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" scope="singleton">
+		<description>A task pool for general use</description>
+        <property name="corePoolSize" value="5" />
+        <property name="maxPoolSize" value="10" />
+        <property name="waitForTasksToCompleteOnShutdown" value="false"/>
+	</bean>
+	
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" scope="singleton">
+		<description>A task pool for general use</description>
+        <property name="corePoolSize" value="150" />
+        <property name="maxPoolSize" value="200" />
+        <property name="queueCapacity" value="10" />
+        <property name="keepAliveSeconds" value="0"/>
+        <property name="waitForTasksToCompleteOnShutdown" value="true"/>
+	</bean>
 
 </beans>
