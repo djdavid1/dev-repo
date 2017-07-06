@@ -19,7 +19,7 @@
 			<list>
 				<value>classpath:_config.properties</value>
 				<value>classpath:config.properties</value>
-				<value>file:${APP_CONFIG_ROOT}#{servletContext.contextPath}/config.properties
+				<value>file:C:\Users\djdav\MusicApp\config.properties
 				</value>
 			</list>
 		</property>

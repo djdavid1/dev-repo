@@ -53,9 +53,11 @@ public class FilePollerService implements Runnable {
 
 		while (true) {
 			try {
+				LOG.debug("readInputFiles from " + incomingWorkDir);
 				/** read the fileNames from the incoming work file directory */
 				List<String> listFilenames = FileUtils.readInputFiles(incomingWorkDir, incomingFileNameFilter);
-
+				LOG.debug("Found " + listFilenames.size() + " files to process");
+				
 				for (String fileName : listFilenames) {
 					LOG.debug("Process file: " + fileName);
 					FileInputStream inputStream = new FileInputStream(new File(fileName));
