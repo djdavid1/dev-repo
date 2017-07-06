@@ -1,9 +1,8 @@
 package de.aoe.musicworld.transforms.tasks;
 
 import java.io.InputStream;
-import java.util.Properties;
 
-import de.aoe.musicworld.base.adapter.AbstractAdapter;
+import java.util.Properties;
 
 /**
  * This class implements an abstract Runnable Task 
@@ -42,9 +41,9 @@ public abstract class AbstractTask implements Runnable {
 	 * 			the adapter to transport the outputStream
 	 * 
 	 */
-	abstract public void setAdapter(AbstractAdapter adapter);
+	abstract public void setAdapterName(String adapterName);
 	
-	abstract public AbstractAdapter getAbstractAdapter();
+	abstract public String getAdapterName();
 	
 	/**
 	 * Getter / Setter for the Properties

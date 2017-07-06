@@ -2,6 +2,7 @@ package de.aoe.musicworld.base.services;
 
 import java.io.File;
 
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import de.aoe.musicworld.base.adapter.AbstractAdapter;
 import de.aoe.musicworld.transforms.tasks.AbstractTask;
 import de.aoe.musicworld.utils.ApplicationContextProvider;
 import de.aoe.musicworld.utils.FileUtils;
@@ -63,13 +63,10 @@ public class FilePollerService implements Runnable {
 					/** Factory method to create prototype task */
 					AbstractTask task = (AbstractTask) ApplicationContextProvider.getApplicationContext()
 							.getBean(taskName);
-					/** Factory method to create prototype adapter */
-					AbstractAdapter adapter = (AbstractAdapter) ApplicationContextProvider.getApplicationContext()
-							.getBean(adapterName);
 
 					/** set all needed parameter to execute task - @see Task */
 					task.setInputStream(inputStream);
-					task.setAdapter(adapter);
+					task.setAdapterName(adapterName);
 					Properties properties = new Properties();
 					properties.put("inputFileName", fileName);
 					task.setProperties(properties);

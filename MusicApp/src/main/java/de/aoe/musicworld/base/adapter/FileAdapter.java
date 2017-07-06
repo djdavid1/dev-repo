@@ -70,7 +70,7 @@ public class FileAdapter extends AbstractAdapter {
 				return;
 			}
 		}
-		LOG.debug(TASKID + "Removed file " + inputFileName);
+		LOG.debug(TASKID + "Removed file from " + inputFileName);
 	}
 
 	@Override

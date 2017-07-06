@@ -19,6 +19,7 @@ import de.aoe.musicworld.pojo.Release;
 import de.aoe.musicworld.pojo.Releases;
 import de.aoe.musicworld.transforms.RecordsJAXBConverter;
 import de.aoe.musicworld.transforms.ReleasesJAXBConverter;
+import de.aoe.musicworld.utils.ApplicationContextProvider;
 import de.aoe.musicworld.utils.StringUtils;
 
 public class RecordsToReleasesTask extends AbstractTask {
@@ -28,8 +29,8 @@ public class RecordsToReleasesTask extends AbstractTask {
 	/** The input inputStream to transform. */
 	private InputStream inputStream;
 
-	/** The adapter adapter to post process the outputStream. */
-	private AbstractAdapter adapter;
+	/** The adapter to post process the outputStream. */
+	private String adapterName;
 
 	/** The global properties of the Task */
 	private Properties properties;
@@ -37,12 +38,24 @@ public class RecordsToReleasesTask extends AbstractTask {
 	/** The task id of the Task */
 	private Long taskId;
 
+	/** Log TaskId */
+	private String LOG_TASKID;
+	
 	@Override
 	public void run() {
 		this.setTaskId(Thread.currentThread().getId());
-		final String TASKID = "Task #" + this.getTaskId() + " - ";
-		LOG.debug(TASKID + "Run " + this.getClass().getSimpleName() + " ... ");
-
+		/** put taskId to properties for logging purposes */
+		properties.put("taskId", getTaskId().toString());
+		LOG_TASKID = "Task #" + this.getTaskId() + " - ";
+		
+		LOG.debug(LOG_TASKID + "Run " + this.getClass().getSimpleName() + " ... ");
+		transformRecordsToReleaseV1();		
+		LOG.debug(LOG_TASKID + "End " + this.getClass().getSimpleName());
+	}
+	
+	private void transformRecordsToReleaseV1(){
+		LOG.debug(LOG_TASKID + "Start transformRecordsToReleaseV1");
+		
 		/**
 		 * This part unmarshal the inputStream to object over the JAXBConverter
 		 */
@@ -51,20 +64,20 @@ public class RecordsToReleasesTask extends AbstractTask {
 		try {
 			records = (Records) recordsConverter.unmarshal(inputStream);
 		} catch (Exception e) {
-			LOG.error(TASKID + e.getMessage(), e);
+			LOG.error(LOG_TASKID + e.getMessage(), e);
 			return;
 		} finally {
 			try {
 				inputStream.close();
 			} catch (IOException e) {
-				LOG.error(TASKID + e.getMessage(), e);
+				LOG.error(LOG_TASKID + e.getMessage(), e);
 			}
 		}
 		if (records == null) {
-			LOG.warn(TASKID + "Unmarshaled JAXBObject is empty");
+			LOG.warn(LOG_TASKID + "Unmarshaled JAXBObject is empty");
 			return;
 		}		
-		LOG.debug(TASKID + "Unmarshaled InputStream to Object over RecordsJAXBConverter");
+		LOG.debug(LOG_TASKID + "Unmarshaled InputStream to Object over RecordsJAXBConverter");
 
 		/**
 		 * This part implements the functional requirement of the
@@ -75,7 +88,7 @@ public class RecordsToReleasesTask extends AbstractTask {
 		try {
 			targetDate = StringUtils.stringToDate("01/01/2011");
 		} catch (ParseException e) {
-			LOG.error(TASKID + "The value cannot be converted to Date", e);
+			LOG.error(LOG_TASKID + "The value cannot be converted to Date", e);
 			return;
 		}
 		Releases releases = new Releases();
@@ -90,7 +103,7 @@ public class RecordsToReleasesTask extends AbstractTask {
 			}
 		}
 		releases.setReleaseList(releaseList);
-		LOG.debug(TASKID + "Transformed Records to Release");
+		LOG.debug(LOG_TASKID + "Transformed Records to Release");
 
 		/**
 		 * This part marshal the object to outputStream over the JAXBConverter
@@ -103,15 +116,26 @@ public class RecordsToReleasesTask extends AbstractTask {
 			LOG.error(e.getMessage(), e);
 			return;
 		}
-		LOG.debug(TASKID + "Marshalled OutputStream over RecordsJAXBConverter");
-
+		LOG.debug(LOG_TASKID + "Marshalled OutputStream over RecordsJAXBConverter");
+		
+		callAdapterV1(outputStream);
+		
+		LOG.debug(LOG_TASKID + "End transformRecordsToReleaseV1");
+	}
+	
+	private void callAdapterV1(OutputStream outputStream){
+		if(outputStream == null)
+			return;
+		
+		/** Factory method to create prototype adapter */
+		AbstractAdapter adapter = (AbstractAdapter) ApplicationContextProvider.getApplicationContext()
+				.getBean(adapterName);
+		
 		/** This part call the adapter to process */
-		properties.put("taskId", getTaskId().toString());
 		adapter.setProperties(properties);
 		adapter.setOutputStream(outputStream);
-		adapter.postProcess();
-		
-		LOG.debug(TASKID + "End " + this.getClass().getSimpleName());
+		adapter.postProcess();	
+		LOG.debug(LOG_TASKID + "Called AdapterV1");
 	}
 
 	@Override
@@ -129,15 +153,7 @@ public class RecordsToReleasesTask extends AbstractTask {
 		return inputStream;
 	}
 
-	@Override
-	public void setAdapter(AbstractAdapter adapter) {
-		this.adapter = adapter;
-	}
 
-	@Override
-	public AbstractAdapter getAbstractAdapter() {
-		return adapter;
-	}
 
 	@Override
 	public void setProperties(Properties properties) {
@@ -157,6 +173,16 @@ public class RecordsToReleasesTask extends AbstractTask {
 	@Override
 	public Long getTaskId() {		
 		return taskId;
+	}
+
+	@Override
+	public void setAdapterName(String adapterName) {
+		this.adapterName = adapterName;
+	}
+
+	@Override
+	public String getAdapterName() {		
+		return adapterName;
 	}
 
 
