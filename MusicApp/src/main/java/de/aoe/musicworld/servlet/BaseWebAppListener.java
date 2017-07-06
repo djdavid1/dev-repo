@@ -10,7 +10,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import de.aoe.musicworld.base.services.FilePollerService;
 import de.aoe.musicworld.base.services.TaskMonitorService;
 import de.aoe.musicworld.utils.ApplicationContextProvider;
-import de.aoe.musicworld.utils.ServerCleanup;
 
 /**
  * This class is used to register/initialize some important services during

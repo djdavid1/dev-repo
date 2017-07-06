@@ -1,89 +1,96 @@
 package de.aoe.musicworld.base.services;
 
 import java.io.File;
+
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import de.aoe.musicworld.transforms.tasks.RecordsToReleasesTask;
+import de.aoe.musicworld.base.adapter.AbstractAdapter;
 import de.aoe.musicworld.transforms.tasks.AbstractTask;
 import de.aoe.musicworld.utils.ApplicationContextProvider;
 import de.aoe.musicworld.utils.FileUtils;
 
+/**
+ * This class implements the FilePollerService.
+ * 
+ * @author DavidJanicki
+ *
+ */
 public class FilePollerService implements Runnable {
 
 	private static final Log LOG = LogFactory.getLog(FilePollerService.class);
 
+	/** The incomingWorkDir defines incoming file directory. */
 	private String incomingWorkDir;
+
+	/** The incomingFileNameFilter defines the criteria to filter the filename.	 */
 	private String incomingFileNameFilter;
 
+	/** The taskName defines task to transform the inputStream of file. */
 	private String taskName;
 
-	private String outgoingAdapter;
-	private String outgoingWorkDir;
+	/** The adapterName defines adapter to post process the outputStream. */
+	private String adapterName;
 
-	public FilePollerService(String incomingWorkDir, String incomingFileNameFilter) {
-		this.incomingWorkDir = incomingWorkDir;
-		this.incomingFileNameFilter = incomingFileNameFilter;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
-		LOG.info("Initiate FilePollerService ... ");
+		LOG.debug("Run FilePollerService ... ");
 
+		/** Factory method to create taskExecutor */
 		ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) ApplicationContextProvider
 				.getApplicationContext().getBean("taskExecutor");
 
-		// read the fileNames in the inputfile directory
-		String[] fileExtensions = incomingFileNameFilter.split(";");
-		List<String> listFilenames = new ArrayList<>();
-		
 		while (true) {
-		try {
-			listFilenames = FileUtils.readInputFiles(incomingWorkDir, fileExtensions);
-		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		
-		for (String fileName : listFilenames) {
-			LOG.debug("Process file: " + fileName);
-			File inputFile = new File(fileName);
-			if (!inputFile.canRead()) {
-				LOG.error("Input cannot be read!");
-			}
-			FileInputStream inputStream = null;
 			try {
-				inputStream = new FileInputStream(inputFile);
-			} catch (FileNotFoundException e) {
-				LOG.error(e.getMessage(), e);
+				/** read the fileNames from the incoming work file directory */
+				List<String> listFilenames = FileUtils.readInputFiles(incomingWorkDir, incomingFileNameFilter);
+
+				for (String fileName : listFilenames) {
+					LOG.debug("Process file: " + fileName);
+					FileInputStream inputStream = new FileInputStream(new File(fileName));
+
+					/** Factory method to create task */
+					AbstractTask task = (AbstractTask) ApplicationContextProvider.getApplicationContext()
+							.getBean(taskName);
+					/** Factory method to create adapter */
+					AbstractAdapter adapter = (AbstractAdapter) ApplicationContextProvider.getApplicationContext()
+							.getBean(adapterName);
+
+					/** set all needed parameter to execute task - @see Task */
+					task.setInputStream(inputStream);
+					task.setAdapter(adapter);
+					Properties properties = new Properties();
+					properties.put("inputFileName", fileName);
+					task.setProperties(properties);
+					taskExecutor.execute(task);
+				}
+			} catch (IOException e) {
+				LOG.error("Error on reading incoming file", e);
+				return;
 			}
 
-			// TODO in Factory to create RecordsToReleasesTask + AdapterObject
-			AbstractTask task = (AbstractTask) ApplicationContextProvider
-					.getApplicationContext().getBean(taskName);
-//			RecordsToReleasesTask task = new RecordsToReleasesTask();
-			task.setInputStream(inputStream);
-//			RecordsToReleasesTask task = new RecordsToReleasesTask(inputStream);
-			taskExecutor.execute(task);
-		}
-		
-		try {
-			Thread.sleep(60 * 1000L);
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-			break;
-		}
-		if (Thread.currentThread().isInterrupted()) {
-			LOG.debug("Thread interrupted, exiting");
-			return;
-		}
-		
+			try {
+				Thread.sleep(20 * 1000L);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+			if (Thread.currentThread().isInterrupted()) {
+				LOG.debug("Thread interrupted, exiting");
+				return;
+			}
+
 		}
 
 	}
@@ -104,22 +111,6 @@ public class FilePollerService implements Runnable {
 		this.incomingFileNameFilter = incomingFileNameFilter;
 	}
 
-	public String getOutgoingWorkDir() {
-		return outgoingWorkDir;
-	}
-
-	public void setOutgoingWorkDir(String outgoingWorkDir) {
-		this.outgoingWorkDir = outgoingWorkDir;
-	}
-
-	public String getOutgoingAdapter() {
-		return outgoingAdapter;
-	}
-
-	public void setOutgoingAdapter(String outgoingAdapter) {
-		this.outgoingAdapter = outgoingAdapter;
-	}
-
 	public String getTaskName() {
 		return taskName;
 	}
@@ -127,5 +118,13 @@ public class FilePollerService implements Runnable {
 	public void setTaskName(String taskName) {
 		this.taskName = taskName;
 	}
-	
+
+	public String getAdapterName() {
+		return adapterName;
+	}
+
+	public void setAdapterName(String adapterName) {
+		this.adapterName = adapterName;
+	}
+
 }

@@ -19,21 +19,6 @@ public class BaseConstants {
 	 * The root of all config files.
 	 */
 	public static final String APP_CONFIG_ROOT = "APP_CONFIG_ROOT";
-
-    /**
-     * The spring value injection parameter for the outgoing work directory.
-     */
-    public static final String OUTGOING_WORK_DIR = "${outgoing_work_dir}";
-
-    /**
-     * The spring value injection parameter for the incoming file filter.
-     */
-    public static final String INCOMING_FILE_FILTER = "${incoming_file_filter}";
-
-    /**
-     * The spring value injection parameter for the incoming work directory.
-     */
-    public static final String INCOMING_WORK_DIR = "${incoming_work_dir}";
     
     /**
      * The bean name of the marshaller.
@@ -50,5 +35,24 @@ public class BaseConstants {
      */
     public static final String UNMARSHALLER_BEAN_NAME = "unmarshaller";
 
+    /**
+     * The bean name of the baseExecutor.
+     */
+    public static final String BASE_EXECUTOR_BEAN_NAME = "baseExecutor";
+    
+    /**
+     * The bean name of the filePollerService.
+     */
+    public static final String FILEPOLLER_SERVICE_BEAN_NAME = "filePollerService";
+    
+    /**
+     * The bean name of the fileAdapter.
+     */
+    public static final String FILEADAPTER_BEAN_NAME = "fileAdapter";
+    
+    /**
+     * The bean name of the fileAdapter.
+     */
+    public static final String RECORDSTORELEASE_TASK_BEAN_NAME = "recordsToReleasesTask";
 	
 }

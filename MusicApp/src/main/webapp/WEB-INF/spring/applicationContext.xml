@@ -30,9 +30,20 @@
 	<bean id="applicationContextProvider" class="de.aoe.musicworld.utils.ApplicationContextProvider"
 		scope="singleton" />
 		
-	<bean id="serverCleanup" class="de.aoe.musicworld.utils.ServerCleanup" />
+	<bean id="serverCleanup" class="de.aoe.musicworld.servlet.ServerCleanup" />
+	
+	<bean id="filePollerService" class="de.aoe.musicworld.base.services.FilePollerService" scope="prototype">
+		<property name="incomingWorkDir" value="${incoming_work_dir}" />
+		<property name="incomingFileNameFilter" value="${incoming_file_filter}" />
+	</bean>
 	
 	<bean id="recordsToReleasesTask" class="de.aoe.musicworld.transforms.tasks.RecordsToReleasesTask" scope="prototype"/>
+	
+	<bean id="fileAdapter" class="de.aoe.musicworld.base.adapter.FileAdapter" scope="prototype">
+		<property name="outgoingWorkDir" value="${outgoing_work_dir}" />
+		<property name="outgoingFilePrefix" value="${outgoing_file_prefix}" />
+		<property name="outgoingFileExtension" value="${outgoing_file_extension}" />
+	</bean>
 	
 	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
 		<property name="contextPath" value="de.aoe.musicworld.pojo" />
@@ -41,9 +52,9 @@
 				<entry key="jaxb.encoding" value="UTF-8" />
 				<entry key="jaxb.formatted.output">
 					<value type="boolean">false</value>
-				</entry>
-			</map>
-		</property>
+				</entry>	           
+	        </map>
+   	 	</property>
 	</bean>
 	
 	<bean id="marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
@@ -52,7 +63,7 @@
 			<map>
 				<entry key="jaxb.encoding" value="UTF-8" />
 				<entry key="jaxb.formatted.output">
-					<value type="boolean">false</value>
+					<value type="boolean">true</value>
 				</entry>
 			</map>
 		</property>

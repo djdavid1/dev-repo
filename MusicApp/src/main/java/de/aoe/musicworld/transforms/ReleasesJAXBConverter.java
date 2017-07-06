@@ -32,7 +32,7 @@ public class ReleasesJAXBConverter implements JAXBConverter {
 	public OutputStream marshal(Object object) throws XmlMappingException, IOException {
 		if (object instanceof Releases) {
 			OutputStream stream = new ByteArrayOutputStream();
-			QName qName = new QName("", "Releases");
+			QName qName = new QName("", "matchingReleases");
 			final JAXBElement<Releases> element = new JAXBElement<>(qName, Releases.class, (Releases) object);
 			Result result = new StreamResult(stream);
 			marshaller.marshal(element, result);

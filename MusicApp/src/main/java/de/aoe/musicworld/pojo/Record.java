@@ -9,6 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.aoe.musicworld.transforms.JAXBDateAdapter;
 
 /**
  * @author DavidJanicki
@@ -31,6 +34,7 @@ public class Record {
 	private String genre;
 
 	@XmlElement(name = "releasedate")
+	@XmlJavaTypeAdapter(JAXBDateAdapter.class)
 	protected Date releaseDate;
 
 	@XmlElement(name = "label")

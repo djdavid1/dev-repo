@@ -1,5 +1,10 @@
 package de.aoe.musicworld.utils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Provides some utilities...
  * 
@@ -15,30 +20,23 @@ public class StringUtils {
 		//empty
 	}
 	
+
 	/**
-	 * Create a useful and short name of this instance.
+	 * Returns Date from a String value.
 	 * 
-	 * de.db.comgate.utils.MyObject@123456 -> MyObject@123456
-	 * 
-	 * @param object
-	 *            the object we get the name from
-	 * @return the name of the object
+	 * @param value
+	 *            the value we want to format
+	 * @return Date
+	 * 			  the date we want to get
+	 * @throws ParseException 
 	 */
-	public static String getObjectName(final Object object) {
-
-		if (object == null || object.toString() == null) {
-			return null;
-		}
-
-		String name = object.toString();
-		int pos = name.lastIndexOf(".");
-		if (pos > -1) {
-			name = name.substring(pos + 1);
-		}
-
-		return name;
+	public static Date stringToDate(final String value) throws ParseException {
+		DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+		if(value != null)
+			return format.parse(value);
+		return null;
 	}
-
+	
 	/**
 	 * Returns true if the value is not null and has a length greater than 0.
 	 * 

@@ -5,20 +5,25 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import de.aoe.musicworld.utils.ApplicationContextProvider;
-
+/**
+ * This class implements the TaskMonitorService to monitor the executing tasks.
+ * 
+ * @author DavidJanicki
+ *
+ */
 public class TaskMonitorService implements Runnable {
 
 	private static final Log LOG = LogFactory.getLog(TaskMonitorService.class);
 
 	@Override
 	public void run() {
-		LOG.info("Initiate TaskMonitorService ... ");
+		LOG.info("Run TaskMonitorService ... ");
 		ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) ApplicationContextProvider
 				.getApplicationContext().getBean("taskExecutor");
 
 		while (true) {
 			int totalTasks = taskExecutor.getActiveCount();
-			LOG.debug("Active Tasks: " + totalTasks);
+			LOG.trace("Active Tasks: " + totalTasks);
 			try {
 				Thread.sleep(10 * 1000L);
 			} catch (InterruptedException ex) {
