@@ -18,7 +18,7 @@
       <xs:element minOccurs="0" name="title" type="xs:string"/>
       <xs:element minOccurs="0" name="name" type="xs:string"/>
       <xs:element minOccurs="0" name="genre" type="xs:string"/>
-      <xs:element minOccurs="0" name="releasedate" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="releasedate" type="xs:string"/>
       <xs:element minOccurs="0" name="label" type="xs:string"/>
       <xs:element minOccurs="0" name="formats" type="xs:string"/>
       <xs:element minOccurs="0" name="tracklisting">
@@ -31,13 +31,13 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="records">
+  <xs:complexType name="releases">
     <xs:annotation>
       <xs:documentation><![CDATA[(author): DavidJanicki
 (version): 1.0]]></xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="record"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="release"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -52,13 +52,13 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="releases">
+  <xs:complexType name="records">
     <xs:annotation>
       <xs:documentation><![CDATA[(author): DavidJanicki
 (version): 1.0]]></xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="release"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="record"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

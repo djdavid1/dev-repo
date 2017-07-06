@@ -18,10 +18,10 @@ public abstract class AbstractAdapter {
 	abstract protected AbstractAdapter createAdapter();
 
 	/**
-	 * method to process the send-, transport- or adapter-job
+	 * method to post process the send-, transport- or adapter-job
 	 * 
 	 */
-	abstract public void process();
+	abstract public void postProcess();
 
 	/**
 	 * Getter / Setter for the InputStream

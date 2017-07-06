@@ -21,6 +21,12 @@ import de.aoe.musicworld.pojo.Records;
 import de.aoe.musicworld.utils.ApplicationContextProvider;
 import de.aoe.musicworld.utils.BaseConstants;
 
+/**
+ * This class defines JAXB unmarshal/marshal functionalities for Records
+ * 
+ * @author DavidJanicki
+ * 
+ */
 public class RecordsJAXBConverter implements JAXBConverter {
 
 	private final Marshaller marshaller;
@@ -31,6 +37,10 @@ public class RecordsJAXBConverter implements JAXBConverter {
 		unmarshaller = (Unmarshaller) ApplicationContextProvider.getBean(BaseConstants.UNMARSHALLER_BEAN_NAME);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.aoe.musicworld.transforms.JAXBConverter#marshal(java.lang.Object)
+	 */
 	public OutputStream marshal(Object object) throws XmlMappingException, IOException {
 		if (object instanceof Records) {
 			OutputStream stream = new ByteArrayOutputStream();
@@ -44,6 +54,10 @@ public class RecordsJAXBConverter implements JAXBConverter {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.aoe.musicworld.transforms.JAXBConverter#unmarshal(java.io.InputStream)
+	 */
 	public Object unmarshal(InputStream inputStream) throws XmlMappingException, IOException {
 		StreamSource in = new StreamSource(inputStream);
 		@SuppressWarnings("unchecked")

@@ -31,12 +31,17 @@ public class RecordsToReleasesTask extends AbstractTask {
 	/** The adapter adapter to post process the outputStream. */
 	private AbstractAdapter adapter;
 
-	/** the global properties of the Task */
+	/** The global properties of the Task */
 	private Properties properties;
+	
+	/** The task id of the Task */
+	private Long taskId;
 
 	@Override
 	public void run() {
-		LOG.info("Run " + this.getClass().getSimpleName() + " ... ");
+		this.setTaskId(Thread.currentThread().getId());
+		final String TASKID = "Task #" + this.getTaskId() + " - ";
+		LOG.debug(TASKID + "Run " + this.getClass().getSimpleName() + " ... ");
 
 		/**
 		 * This part unmarshal the inputStream to object over the JAXBConverter
@@ -46,19 +51,20 @@ public class RecordsToReleasesTask extends AbstractTask {
 		try {
 			records = (Records) recordsConverter.unmarshal(inputStream);
 		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error(TASKID + e.getMessage(), e);
 			return;
 		} finally {
 			try {
 				inputStream.close();
 			} catch (IOException e) {
-				LOG.error(e.getMessage(), e);
+				LOG.error(TASKID + e.getMessage(), e);
 			}
 		}
 		if (records == null) {
-			LOG.warn("Unmarshaled JAXBObject is empty");
+			LOG.warn(TASKID + "Unmarshaled JAXBObject is empty");
 			return;
-		}
+		}		
+		LOG.debug(TASKID + "Unmarshaled InputStream to Object over RecordsJAXBConverter");
 
 		/**
 		 * This part implements the functional requirement of the
@@ -69,7 +75,7 @@ public class RecordsToReleasesTask extends AbstractTask {
 		try {
 			targetDate = StringUtils.stringToDate("01/01/2011");
 		} catch (ParseException e) {
-			LOG.error("The value cannot be converted to Date", e);
+			LOG.error(TASKID + "The value cannot be converted to Date", e);
 			return;
 		}
 		Releases releases = new Releases();
@@ -84,6 +90,7 @@ public class RecordsToReleasesTask extends AbstractTask {
 			}
 		}
 		releases.setReleaseList(releaseList);
+		LOG.debug(TASKID + "Transformed Records to Release");
 
 		/**
 		 * This part marshal the object to outputStream over the JAXBConverter
@@ -96,11 +103,15 @@ public class RecordsToReleasesTask extends AbstractTask {
 			LOG.error(e.getMessage(), e);
 			return;
 		}
+		LOG.debug(TASKID + "Marshalled OutputStream over RecordsJAXBConverter");
 
 		/** This part call the adapter to process */
+		properties.put("taskId", getTaskId().toString());
 		adapter.setProperties(properties);
 		adapter.setOutputStream(outputStream);
-		adapter.process();
+		adapter.postProcess();
+		
+		LOG.debug(TASKID + "End " + this.getClass().getSimpleName());
 	}
 
 	@Override
@@ -137,5 +148,17 @@ public class RecordsToReleasesTask extends AbstractTask {
 	public Properties getProperties() {
 		return properties;
 	}
+
+	@Override
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
+	}
+
+	@Override
+	public Long getTaskId() {		
+		return taskId;
+	}
+
+
 
 }

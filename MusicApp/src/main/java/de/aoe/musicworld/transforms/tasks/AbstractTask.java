@@ -18,6 +18,15 @@ public abstract class AbstractTask implements Runnable {
 	 * 
 	 */
 	abstract protected AbstractTask createTask();
+	
+	/**
+	 * Getter / Setter for the TaskId
+	 * 			this defines the identification of task
+	 * 
+	 */
+	abstract public void setTaskId(Long taskId);
+	
+	abstract public Long getTaskId();
 		
 	/**
 	 * Getter / Setter for the InputStream

@@ -60,10 +60,10 @@ public class FilePollerService implements Runnable {
 					LOG.debug("Process file: " + fileName);
 					FileInputStream inputStream = new FileInputStream(new File(fileName));
 
-					/** Factory method to create task */
+					/** Factory method to create prototype task */
 					AbstractTask task = (AbstractTask) ApplicationContextProvider.getApplicationContext()
 							.getBean(taskName);
-					/** Factory method to create adapter */
+					/** Factory method to create prototype adapter */
 					AbstractAdapter adapter = (AbstractAdapter) ApplicationContextProvider.getApplicationContext()
 							.getBean(adapterName);
 
@@ -81,6 +81,7 @@ public class FilePollerService implements Runnable {
 			}
 
 			try {
+				/* waiting 20 seconds for next poll */
 				Thread.sleep(20 * 1000L);
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
@@ -90,9 +91,7 @@ public class FilePollerService implements Runnable {
 				LOG.debug("Thread interrupted, exiting");
 				return;
 			}
-
 		}
-
 	}
 
 	public String getIncomingWorkDir() {

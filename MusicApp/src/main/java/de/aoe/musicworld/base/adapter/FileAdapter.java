@@ -38,10 +38,12 @@ public class FileAdapter extends AbstractAdapter {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.aoe.musicworld.base.adapter.AbstractAdapter#process()
+	 * @see de.aoe.musicworld.base.adapter.AbstractAdapter#postProcess()
 	 */
-	public void process() {
-		LOG.info("Process FileAdapter ... ");
+	public void postProcess() {
+		String TaskId = properties.getProperty("taskId");
+		final String TASKID = "Task #" + TaskId + " - ";
+		LOG.debug(TASKID + "Process FileAdapter ... ");
 
 		/* generates unique FileName */
 		String uniqueFileName = FileUtils.generateUniqueFileName(outgoingFilePrefix, outgoingFileExtension);
@@ -53,9 +55,10 @@ public class FileAdapter extends AbstractAdapter {
 		try {
 			FileUtils.outputStreamToFile(outputStream, outputFile);
 		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error(TASKID + e.getMessage(), e);
 			return;
 		}
+		LOG.debug(TASKID + "Written file to " + outputFile.getAbsolutePath());
 
 		/* if file is written, the inputfile will be removed
 		 */
@@ -63,9 +66,11 @@ public class FileAdapter extends AbstractAdapter {
 		if (inputFileName != null) {
 			File inputFile = new File(inputFileName);
 			if (inputFile.canRead() && !inputFile.delete()) {
-				LOG.error("Error on delete file " + inputFileName);
+				LOG.error(TASKID + "Error on delete file " + inputFileName);
+				return;
 			}
 		}
+		LOG.debug(TASKID + "Removed file " + inputFileName);
 	}
 
 	@Override

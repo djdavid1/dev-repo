@@ -169,7 +169,9 @@
                         </transformSchema>
                     </transformSchemas>
                 </configuration>
-            </plugin>            
+            </plugin>
+            -->
+            <!--     
 			<plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
