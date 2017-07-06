@@ -55,6 +55,12 @@
 	src/main/resources/config.properties
 	to file:C:\Users\Olaf\MusicApp\config.properties
 
+	2) modify log4j for logging on webserver, example for tomcat
+	src/main/resources/log4j.properties
+	#log4j.appender.file.File=./jetty/logs/app.log
+	log4j.appender.file.File=${catalina.base}/logs/MusicApp.log
+	#log4j.appender.file.File=${jboss.server.log.dir}/MusicApp.log
+
 	3) Maven
 	mvn clean install
 	/target/MusicApp-x.x.x-SNAPSHOT.war
