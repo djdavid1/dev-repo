@@ -48,23 +48,23 @@
 # Deployment War
 	1) /src/main/webapp/WEB-INF/spring/applicationContext.xml
 	change following line:
-	<value>file:${APP_CONFIG_ROOT}#{servletContext.contextPath}/config.properties
-	to <value>file:C:\Users\Olaf\MusicApp\config.properties<value>
+	<value>file:C:\Users\djdav\MusicApp\config.properties<value> (example for windows)
 
-	2) copy config.properties and modify input/output-directory
-	src/main/resources/config.properties
-	to file:C:\Users\Olaf\MusicApp\config.properties
+	2) copy config.properties and modify/create input/output-directory
+	src/main/resources/config_WIN.properties     (example for windows)
+	to file:C:\Users\djdav\MusicApp\config.properties
 
-	2) modify log4j for logging on webserver, example for tomcat
+	2) modify log4j for logging on webserver (example for tomcat)
 	src/main/resources/log4j.properties
-	#log4j.appender.file.File=./jetty/logs/app.log
-	log4j.appender.file.File=${catalina.base}/logs/MusicApp.log
-	#log4j.appender.file.File=${jboss.server.log.dir}/MusicApp.log
+	#log4j.appender.file.File=./jetty/logs/app.log			 (eclipse mvn:jetty)
+	log4j.appender.file.File=${catalina.base}/logs/MusicApp.log      (tomcat) 
+	#log4j.appender.file.File=${jboss.server.log.dir}/MusicApp.log   (wildfly)
 
 	3) Maven
 	mvn clean install
 	/target/MusicApp-x.x.x-SNAPSHOT.war
 
-	4) deploy to any servlet engine: Tomcat, Jetty, Wildfly, ...
+	4) deploy to any webserver (example for tomcat)
+	copy /target/MusicApp-x.x.x-SNAPSHOT.war to %CATALINA_HOME%/webapps
 
 
