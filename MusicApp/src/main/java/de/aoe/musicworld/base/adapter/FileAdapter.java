@@ -9,7 +9,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.aoe.musicworld.utils.FileUtils;
+import de.aoe.musicworld.utils.BaseFileUtils;
 
 /**
  * This class implements an concrete Adapter which can be processed by any Task. 
@@ -46,14 +46,14 @@ public class FileAdapter extends AbstractAdapter {
 		LOG.debug(TASKID + "Process FileAdapter ... ");
 
 		/* generates unique FileName */
-		String uniqueFileName = FileUtils.generateUniqueFileName(outgoingFilePrefix, outgoingFileExtension);
+		String uniqueFileName = BaseFileUtils.generateUniqueFileName(outgoingFilePrefix, outgoingFileExtension);
 		File outputFile = new File(outgoingWorkDir.concat(uniqueFileName));
 		
 		/* writes file with content of the outputStream
 		 * on Exception return - the file will be polled again 
 		 */
 		try {
-			FileUtils.outputStreamToFile(outputStream, outputFile);
+			BaseFileUtils.outputStreamToFile(outputStream, outputFile);
 		} catch (IOException e) {
 			LOG.error(TASKID + e.getMessage(), e);
 			return;

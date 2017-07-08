@@ -14,7 +14,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import de.aoe.musicworld.transforms.tasks.AbstractTask;
 import de.aoe.musicworld.utils.ApplicationContextProvider;
-import de.aoe.musicworld.utils.FileUtils;
+import de.aoe.musicworld.utils.BaseFileUtils;
 
 /**
  * This class implements the FilePollerService.
@@ -55,7 +55,7 @@ public class FilePollerService implements Runnable {
 			try {
 				LOG.debug("readInputFiles from " + incomingWorkDir);
 				/** read the fileNames from the incoming work file directory */
-				List<String> listFilenames = FileUtils.readInputFiles(incomingWorkDir, incomingFileNameFilter);
+				List<String> listFilenames = BaseFileUtils.readInputFiles(incomingWorkDir, incomingFileNameFilter);
 				LOG.debug("Found " + listFilenames.size() + " files to process");
 				
 				for (String fileName : listFilenames) {

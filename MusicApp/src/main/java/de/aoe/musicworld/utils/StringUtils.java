@@ -32,7 +32,7 @@ public class StringUtils {
 	 */
 	public static Date stringToDate(final String value) throws ParseException {
 		DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-		if(value != null)
+		if(isNotNullAndNotEmpty(value))
 			return format.parse(value);
 		return null;
 	}

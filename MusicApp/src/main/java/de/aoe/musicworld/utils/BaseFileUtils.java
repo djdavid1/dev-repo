@@ -2,10 +2,12 @@ package de.aoe.musicworld.utils;
 
 import java.io.ByteArrayOutputStream;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,18 +18,20 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.TimeZone;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * Provides some utilities...
  * 
  * @author DavidJanicki
  * 
  */
-public class FileUtils {
+public class BaseFileUtils {
 
 	/**
 	 * Hidden Constructor.
 	 */
-	protected FileUtils() {
+	protected BaseFileUtils() {
 		// empty
 	}
 
@@ -41,9 +45,11 @@ public class FileUtils {
 	 * @return List<String> the list of all filenames in incoming file directory
 	 */
 	public static List<String> readInputFiles(String workDir, String filter) throws IOException {
+		if (!StringUtils.isNotNullAndNotEmpty(workDir) || !StringUtils.isNotNullAndNotEmpty(filter))
+			throw new IOException("input work directory or file extension are empty");
+
 		String[] fileExtensions = filter.split(";");
-		List<File> files = (List<File>) org.apache.commons.io.FileUtils.listFiles(new File(workDir), fileExtensions,
-				true);
+		List<File> files = (List<File>) FileUtils.listFiles(new File(workDir), fileExtensions, true);
 		List<String> listFilenames = new ArrayList<>();
 		for (File file : files) {
 			listFilenames.add(file.getCanonicalPath());
@@ -97,9 +103,14 @@ public class FileUtils {
 	 *            the target file
 	 * @exception IOException
 	 */
-	public static void outputStreamToFile(OutputStream outputStream, File outputFile) throws IOException {
-		ByteArrayOutputStream baos = (ByteArrayOutputStream) outputStream;
-		Files.write(Paths.get(outputFile.getAbsolutePath()), baos.toByteArray());
+	public static boolean outputStreamToFile(OutputStream outputStream, File outputFile) throws IOException {
+		if (outputStream instanceof ByteArrayOutputStream) {
+			ByteArrayOutputStream baos = (ByteArrayOutputStream) outputStream;
+			Files.write(Paths.get(outputFile.getAbsolutePath()), baos.toByteArray());
+			return true;
+		} else {
+			throw new ClassCastException("outputStream is not instance of ByteArrayOutputStream");
+		}
 	}
 
 	/**
@@ -108,9 +119,9 @@ public class FileUtils {
 	 * @param outputStream
 	 *            the outputStream to read
 	 * @return String content of the outputStream
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
-	public static String outputStreamToFile(OutputStream outputStream) throws UnsupportedEncodingException {
+	public static String outputStreamToString(OutputStream outputStream) throws UnsupportedEncodingException {
 		ByteArrayOutputStream baos = (ByteArrayOutputStream) outputStream;
 		if (baos != null)
 			return baos.toString("UTF-8");
@@ -132,8 +143,43 @@ public class FileUtils {
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String uniqueName = dateFormat.format(new Date());
 		StringBuilder builder = new StringBuilder();
-		builder.append(prefix).append("_").append(uniqueName).append(".").append(extension);
+		if (StringUtils.isNotNullAndNotEmpty(prefix)) {
+			builder.append(prefix).append("_");
+		}
+		builder.append(uniqueName);
+		if (StringUtils.isNotNullAndNotEmpty(extension)) {
+			builder.append(".").append(extension);
+		}
 		return builder.toString();
+	}
+
+	/**
+	 * This function copy file from source to target destination
+	 * 
+	 * @param source
+	 * @param destDir
+	 * @throws IOException
+	 */
+	public static void copyFile(File source, File destDir) throws IOException {
+		FileUtils.copyFileToDirectory(source, destDir);
+	}
+
+	/**
+	 * This function string to ouputStream
+	 * 
+	 * @param content
+	 * @throws IOException
+	 */
+	public static OutputStream stringToOutputStream(String content) throws IOException {
+		if(!StringUtils.isNotNullAndNotEmpty(content))
+			throw new IOException("String content is empty");
+		
+		OutputStream outputStream = new ByteArrayOutputStream(100);
+		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+		outputStreamWriter.write(content);
+		outputStreamWriter.flush();
+		outputStreamWriter.close();
+		return outputStream;
 	}
 
 }
